@@ -1,16 +1,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../utils/supabase";
 import { Link } from "react-router";
-interface Expense {
-  id: string;
-  date: string;
-  item: string;
-  amount: number;
-  description: string;
-}
+import { Database } from "./../../database.types";
 
 const ExpenseList = () => {
-  const [expenseList, setExpenseList] = useState<Expense[]>([]);
+  type Expenses = Database["public"]["Tables"]["expenses"]["Row"];
+
+  const [expenseList, setExpenseList] = useState<Expenses[]>([]);
   //   const fetchData =
   useEffect(() => {
     const getExpenseData = async () => {
