@@ -7,7 +7,7 @@ const ExpenseList = () => {
   type Expenses = Database["public"]["Tables"]["expenses"]["Row"];
 
   const [expenseList, setExpenseList] = useState<Expenses[]>([]);
-  //   const fetchData =
+
   useEffect(() => {
     const getExpenseData = async () => {
       try {
@@ -19,7 +19,7 @@ const ExpenseList = () => {
       }
     };
     getExpenseData();
-  }, []);
+  }, [expenseList]);
 
   return (
     <div className="shadow-md p-4 rounded-md space-y-4">
