@@ -14,6 +14,7 @@ const CreateExpense = () => {
       amount: Number(formData.get("amount")) as number,
       description: formData.get("description") as string,
     };
+    //공통함수로
 
     if (!data.date || !data.item || !data.amount || !data.description) {
       return alert("정보를 모두 입력해주세요");
