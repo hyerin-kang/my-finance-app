@@ -12,6 +12,10 @@ const ExpenseList = () => {
   const selectedFilter = searchParams.get("month");
   const monthToTwo = selectedFilter?.padStart(2, "0");
 
+  const amountToWon = (amount: number) => {
+    return new Intl.NumberFormat("ko-KR").format(amount);
+  };
+
   useEffect(() => {
     const getExpenseData = async () => {
       try {
@@ -45,7 +49,7 @@ const ExpenseList = () => {
                 </div>
               </div>
               <div className="text-lg font-bold text-blue-500">
-                {item.amount}
+                {amountToWon(item.amount)}원
               </div>
             </Link>
           );

@@ -2,11 +2,8 @@ import { Label } from "@radix-ui/react-label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { supabase } from "../utils/supabase";
-// import { Database } from "../../database.types";
 
 const CreateExpense = () => {
-  // type Expenses = Database["public"]["Tables"]["expenses"]["Row"];
-
   const addExpense = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -14,17 +11,22 @@ const CreateExpense = () => {
     const data = {
       date: formData.get("date") as string,
       item: formData.get("item") as string,
-      amount: Number(formData.get("amount")),
+      amount: Number(formData.get("amount")) as number,
       description: formData.get("description") as string,
     };
-    console.log("data : ", data);
-    console.log("추가");
+
+    if (!data.date || !data.item || !data.amount || !data.description) {
+      return alert("정보를 모두 입력해주세요");
+    }
     try {
-      const { error } = await supabase.from("expenses").insert([data]);
+      const { error } = await supabase.from("expenses").insert(data);
+      alert("가계부가 추가 되었습니다.");
+
       if (error) throw error;
     } catch (error) {
       console.log(error);
     }
+    e.currentTarget?.reset();
   };
   return (
     <form
