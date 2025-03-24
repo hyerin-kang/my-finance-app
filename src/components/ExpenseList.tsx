@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../utils/supabase";
 import { Link, useSearchParams } from "react-router";
-import { Database } from "./../../database.types";
+import { Tables } from "../../database.types";
 
 const ExpenseList = () => {
-  type Expenses = Database["public"]["Tables"]["expenses"]["Row"];
-
-  const [expenseList, setExpenseList] = useState<Expenses[]>([]);
+  const [expenseList, setExpenseList] = useState<Tables<"expenses">[]>([]);
   const [searchParams] = useSearchParams();
 
   const selectedFilter = searchParams.get("month") || "1";
