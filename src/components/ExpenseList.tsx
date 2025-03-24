@@ -8,36 +8,17 @@ const ExpenseList = () => {
 
   const [expenseList, setExpenseList] = useState<Expenses[]>([]);
   const [searchParams] = useSearchParams();
-  // const [filteredList, setFilteredList] = useState<Expenses[]>([]);
 
   const selectedFilter = searchParams.get("month");
-
-  useEffect(() => {
-    console.log("selectedFilter", selectedFilter);
-    // if (selectedFilter) {
-    //   const filtered = expenseList.filter((item) => {
-    //     const itemMonth = item.date.split("-")[1];
-    //     return itemMonth == selectedFilter;
-    //   });
-    // }
-
-    //[{"id": "069a8456-d05c-48d6-bc35-e83317cdc9d3","date": "2025-03-20","item": "식비","amount": 20000,"description": "양꼬치"}]
-    //date: "2025-03-19"
-    // const date = expenseList.map(function (item) {
-    //   return item.date;
-    // });
-    // //["2025-03-20"]
-    // const dateMonth = date.map(function (item) {
-    //   return item.split("-")[1];
-    // });
-    //'[03]'
-    // console.log(dateMonth);
-  }, [selectedFilter]);
+  const monthToTwo = selectedFilter?.padStart(2, "0");
 
   useEffect(() => {
     const getExpenseData = async () => {
       try {
-        const { data, error } = await supabase.from("expenses").select("*");
+        const { data, error } = await supabase
+          .from("expenses")
+          .select("*")
+          .like("date", `%-${monthToTwo}-%`);
         if (error) throw error;
         setExpenseList(data);
       } catch (error) {
@@ -45,28 +26,35 @@ const ExpenseList = () => {
       }
     };
     getExpenseData();
-  }, [expenseList]);
+  }, [selectedFilter]);
 
   return (
     <div className="shadow-md p-4 rounded-md space-y-4">
-      ExpenseList
-      {expenseList.map(function (item) {
-        return (
-          <Link
-            to={`/detail/${item.id}`}
-            key={item.id}
-            className="flex items-center justify-between p-4 rounded-md bg-gray-50 border-1"
-          >
-            <div>
-              <div className="text-sm text-gray-500">{item.date}</div>
-              <div className="text-lg font-bold text-blue-500">
-                {item.item} - {item.description}
+      {expenseList.length > 0 ? (
+        expenseList.map(function (item) {
+          return (
+            <Link
+              to={`/detail/${item.id}`}
+              key={item.id}
+              className="flex items-center justify-between p-4 rounded-md bg-gray-50 border-1"
+            >
+              <div>
+                <div className="text-sm text-gray-500">{item.date}</div>
+                <div className="text-lg font-bold text-blue-500">
+                  {item.item} - {item.description}
+                </div>
               </div>
-            </div>
-            <div className="text-lg font-bold text-blue-500">{item.amount}</div>
-          </Link>
-        );
-      })}
+              <div className="text-lg font-bold text-blue-500">
+                {item.amount}
+              </div>
+            </Link>
+          );
+        })
+      ) : (
+        <div className="text-center text-gray-500">
+          {monthToTwo}월 데이터가 없습니다
+        </div>
+      )}
     </div>
   );
 };
