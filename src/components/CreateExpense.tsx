@@ -18,15 +18,14 @@ const CreateExpense = () => {
     if (!data.date || !data.item || !data.amount || !data.description) {
       return alert("정보를 모두 입력해주세요");
     }
+    e.currentTarget.reset();
     try {
       const { error } = await supabase.from("expenses").insert(data);
       alert("가계부가 추가 되었습니다.");
-
       if (error) throw error;
     } catch (error) {
       console.log(error);
     }
-    e.currentTarget?.reset();
   };
   return (
     <form
