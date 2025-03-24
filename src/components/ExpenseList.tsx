@@ -1,12 +1,31 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../utils/supabase";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { Database } from "./../../database.types";
 
 const ExpenseList = () => {
   type Expenses = Database["public"]["Tables"]["expenses"]["Row"];
 
   const [expenseList, setExpenseList] = useState<Expenses[]>([]);
+  const [searchParams] = useSearchParams();
+
+  const selectedFilter = searchParams.get("month");
+
+  useEffect(() => {
+    console.log("selectedFilter", selectedFilter);
+
+    //[{"id": "069a8456-d05c-48d6-bc35-e83317cdc9d3","date": "2025-03-20","item": "식비","amount": 20000,"description": "양꼬치"}]
+    //date: "2025-03-19"
+    const date = expenseList.map(function (item) {
+      return item.date;
+    });
+    //["2025-03-20"]
+    const dateMonth = date.map(function (item) {
+      return item.split("-")[1];
+    });
+    //'[03]'
+    // console.log(dateMonth);
+  }, [selectedFilter]);
 
   useEffect(() => {
     const getExpenseData = async () => {
