@@ -50,7 +50,6 @@ const Detail = () => {
   const handleDelete = async (id: Tables<"expenses">["id"]) => {
     const isConfirm = window.confirm("정말 삭제할까요?");
     if (!isConfirm) return;
-    console.log(id);
     await supabase.from("expenses").delete().eq("id", id);
     navigate("/");
   };

@@ -21,8 +21,9 @@ const CreateExpense = () => {
     }
     e.currentTarget.reset();
     try {
-      const { error } = await supabase.from("expenses").insert(data);
+      const { error } = await supabase.from("expenses").insert(data).select();
       alert("가계부가 추가 되었습니다.");
+      window.location.reload();
       if (error) throw error;
     } catch (error) {
       console.log(error);
