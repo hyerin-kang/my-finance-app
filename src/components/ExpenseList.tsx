@@ -8,21 +8,28 @@ const ExpenseList = () => {
 
   const [expenseList, setExpenseList] = useState<Expenses[]>([]);
   const [searchParams] = useSearchParams();
+  // const [filteredList, setFilteredList] = useState<Expenses[]>([]);
 
   const selectedFilter = searchParams.get("month");
 
   useEffect(() => {
     console.log("selectedFilter", selectedFilter);
+    // if (selectedFilter) {
+    //   const filtered = expenseList.filter((item) => {
+    //     const itemMonth = item.date.split("-")[1];
+    //     return itemMonth == selectedFilter;
+    //   });
+    // }
 
     //[{"id": "069a8456-d05c-48d6-bc35-e83317cdc9d3","date": "2025-03-20","item": "식비","amount": 20000,"description": "양꼬치"}]
     //date: "2025-03-19"
-    const date = expenseList.map(function (item) {
-      return item.date;
-    });
-    //["2025-03-20"]
-    const dateMonth = date.map(function (item) {
-      return item.split("-")[1];
-    });
+    // const date = expenseList.map(function (item) {
+    //   return item.date;
+    // });
+    // //["2025-03-20"]
+    // const dateMonth = date.map(function (item) {
+    //   return item.split("-")[1];
+    // });
     //'[03]'
     // console.log(dateMonth);
   }, [selectedFilter]);
