@@ -5,46 +5,39 @@ import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { supabase } from "../utils/supabase";
 import { Tables } from "../../database.types";
+import { getDetailData } from "../api/expense-api";
+import { useQuery } from "@tanstack/react-query";
 
 const Detail = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [expense, setExpense] = useState<Tables<"expenses"> | null>(null);
-  const [formData, setFormData] = useState<Tables<"expenses">>({
-    id: "",
-    date: "",
-    item: "",
-    amount: 0,
-    description: "",
+  const { data, isPending, isError } = useQuery({
+    queryKey: ["expenses", id],
+    queryFn: async () => {
+      if (id) {
+        const res = await getDetailData(id);
+        return res;
+      }
+    },
   });
 
+  const [formData, setFormData] = useState<Tables<"expenses"> | null>(null);
+
   useEffect(() => {
-    const getExpenseData = async () => {
-      try {
-        if (id) {
-          const { data, error } = await supabase
-            .from("expenses")
-            .select("*")
-            .eq("id", id)
-            .single();
-          if (error) throw error;
-          setExpense(data);
-          setFormData(data);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getExpenseData();
-  }, [id]);
+    if (data) {
+      setFormData(data);
+    }
+  }, [data]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    if (formData) {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const handleDelete = async (id: Tables<"expenses">["id"]) => {
@@ -60,19 +53,23 @@ const Detail = () => {
   ) => {
     e.preventDefault();
 
-    const isChanged = expense !== formData;
-    if (!isChanged) {
+    // const isChanged = expense !== formData;
+    // if (!isChanged) {
+    //   return alert("수정사항이 없습니다");
+    // }
+    if (!formData) return;
+
+    if (formData == data) {
       return alert("수정사항이 없습니다");
     }
 
     const { error } = await supabase
       .from("expenses")
       .update({
-        id: id,
-        date: formData.date,
-        item: formData.item,
-        amount: formData.amount,
-        description: formData.description,
+        date: formData?.date,
+        item: formData?.item,
+        amount: formData?.amount,
+        description: formData?.description,
       })
       .eq("id", id);
 
@@ -82,7 +79,15 @@ const Detail = () => {
     navigate("/");
   };
 
-  return expense && formData ? (
+  if (isPending) {
+    return <div>로딩중...</div>;
+  }
+
+  if (isError) {
+    return <div>데이터 조회 중 오류가 발생했습니다.</div>;
+  }
+
+  return formData ? (
     <div className="rounded-md shadow-md p-4">
       <form className="space-y-4">
         <div className="grid items-center gap-1.5  flex-1 w-full">
