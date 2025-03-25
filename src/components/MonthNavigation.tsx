@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 
 const MonthNavigation = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const filterMonth = Number(searchParams.get("month"));
+  const filterMonth = Number(searchParams.get("month")) || 1;
 
   const btns = Array.from({ length: 12 }, (_, i) => i + 1);
 

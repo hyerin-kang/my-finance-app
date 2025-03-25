@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../utils/supabase";
 import { Link, useSearchParams } from "react-router";
-import { Database } from "./../../database.types";
+import { Tables } from "../../database.types";
 
 const ExpenseList = () => {
-  type Expenses = Database["public"]["Tables"]["expenses"]["Row"];
-
-  const [expenseList, setExpenseList] = useState<Expenses[]>([]);
+  const [expenseList, setExpenseList] = useState<Tables<"expenses">[]>([]);
   const [searchParams] = useSearchParams();
 
-  const selectedFilter = searchParams.get("month");
+  const selectedFilter = searchParams.get("month") || "1";
   const monthToTwo = selectedFilter?.padStart(2, "0");
 
   const amountToWon = (amount: number) => {
@@ -22,6 +20,7 @@ const ExpenseList = () => {
         const { data, error } = await supabase
           .from("expenses")
           .select("*")
+          .order("date", { ascending: false })
           .like("date", `%-${monthToTwo}-%`);
         if (error) throw error;
         setExpenseList(data);
@@ -30,7 +29,7 @@ const ExpenseList = () => {
       }
     };
     getExpenseData();
-  }, [selectedFilter]);
+  }, [monthToTwo]);
 
   return (
     <div className="shadow-md p-4 rounded-md space-y-4">
