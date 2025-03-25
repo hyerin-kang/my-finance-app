@@ -15,9 +15,7 @@ export const getExpensesData = async(filter:string):Promise<Tables<"expenses">[]
 
 //데이터 추가 로직
 export const addExpenseData = async(data:TablesInsert<'expenses'>)=>{
-    const { error } = await supabase.from("expenses").insert(data).select();
-    alert("가계부가 추가 되었습니다.");
-    window.location.reload();
+    const { error } = await supabase.from("expenses").insert(data);
     if (error) {
       return console.log(error)
     };
