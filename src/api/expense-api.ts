@@ -1,4 +1,4 @@
-import { Tables } from "../../database.types";
+import { Tables, TablesInsert } from "../../database.types";
 import { supabase } from "../utils/supabase";
 
 export const getExpensesData = async(filter:string):Promise<Tables<"expenses">[]>=>{
@@ -7,7 +7,16 @@ export const getExpensesData = async(filter:string):Promise<Tables<"expenses">[]
 
     if(error){
       console.log(error)
-      return []
+      return [];
     };
     return data;
+}
+
+export const addExpenseData = async(data:TablesInsert<'expenses'>)=>{
+    const { error } = await supabase.from("expenses").insert(data).select();
+    alert("가계부가 추가 되었습니다.");
+    window.location.reload();
+    if (error) {
+      return console.log(error)
+    };
 }
