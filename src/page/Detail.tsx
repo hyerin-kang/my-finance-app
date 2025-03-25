@@ -54,6 +54,34 @@ const Detail = () => {
     navigate("/");
   };
 
+  const handleUpdate = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    id: Tables<"expenses">["id"]
+  ) => {
+    e.preventDefault();
+
+    const isChanged = expense !== formData;
+    if (!isChanged) {
+      return alert("수정사항이 없습니다");
+    }
+
+    const { error } = await supabase
+      .from("expenses")
+      .update({
+        id: id,
+        date: formData.date,
+        item: formData.item,
+        amount: formData.amount,
+        description: formData.description,
+      })
+      .eq("id", id);
+
+    if (error) {
+      return alert(error.message);
+    }
+    navigate("/");
+  };
+
   return expense && formData ? (
     <div className="rounded-md shadow-md p-4">
       <form className="space-y-4">
@@ -98,7 +126,14 @@ const Detail = () => {
           />
         </div>
         <div className="space-x-2">
-          <Button>수정</Button>
+          <Button
+            type="submit"
+            onClick={(e) => {
+              handleUpdate(e, formData.id);
+            }}
+          >
+            수정
+          </Button>
           <Button
             type="button"
             onClick={() => {
