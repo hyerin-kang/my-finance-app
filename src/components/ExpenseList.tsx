@@ -1,40 +1,33 @@
-import { useEffect, useState } from "react";
-import { supabase } from "../utils/supabase";
 import { Link, useSearchParams } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import { getExpensesData } from "../api/expense-api";
 import { Tables } from "../../database.types";
 
 const ExpenseList = () => {
-  const [expenseList, setExpenseList] = useState<Tables<"expenses">[]>([]);
   const [searchParams] = useSearchParams();
-
   const selectedFilter = searchParams.get("month") || "1";
-  const monthToTwo = selectedFilter?.padStart(2, "0");
 
   const amountToWon = (amount: number) => {
     return new Intl.NumberFormat("ko-KR").format(amount);
   };
 
-  useEffect(() => {
-    const getExpenseData = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("expenses")
-          .select("*")
-          .order("date", { ascending: false })
-          .like("date", `%-${monthToTwo}-%`);
-        if (error) throw error;
-        setExpenseList(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getExpenseData();
-  }, [monthToTwo]);
+  const { data, isPending, isError } = useQuery<Tables<"expenses">[]>({
+    queryKey: ["expenses", selectedFilter],
+    queryFn: () => getExpensesData(selectedFilter),
+  });
+
+  if (isPending) {
+    return <div>로딩중...</div>;
+  }
+
+  if (isError) {
+    return <div>데이터 조회 중 오류가 발생했습니다.</div>;
+  }
 
   return (
     <div className="shadow-md p-4 rounded-md space-y-4">
-      {expenseList.length > 0 ? (
-        expenseList.map(function (item) {
+      {data.length > 0 ? (
+        data.map(function (item) {
           return (
             <Link
               to={`/detail/${item.id}`}
@@ -55,7 +48,7 @@ const ExpenseList = () => {
         })
       ) : (
         <div className="text-center text-gray-500">
-          {monthToTwo}월 데이터가 없습니다
+          {selectedFilter}월 데이터가 없습니다
         </div>
       )}
     </div>

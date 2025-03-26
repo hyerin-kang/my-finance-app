@@ -1,9 +1,19 @@
 import { Label } from "@radix-ui/react-label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { supabase } from "../utils/supabase";
+import { addExpenseData } from "../api/expense-api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const CreateExpense = () => {
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn: addExpenseData,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      alert("가계부가 추가되었습니다");
+    },
+  });
+
   const addExpense = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -14,24 +24,17 @@ const CreateExpense = () => {
       amount: Number(formData.get("amount")) as number,
       description: formData.get("description") as string,
     };
-    //공통함수로
 
     if (!data.date || !data.item || !data.amount || !data.description) {
       return alert("정보를 모두 입력해주세요");
     }
-    e.currentTarget.reset();
-    try {
-      const { error } = await supabase.from("expenses").insert(data).select();
-      alert("가계부가 추가 되었습니다.");
-      window.location.reload();
-      if (error) throw error;
-    } catch (error) {
-      console.log(error);
-    }
+    mutate(data);
   };
   return (
     <form
-      onSubmit={addExpense}
+      onSubmit={(e) => {
+        addExpense(e);
+      }}
       className="p-4 shadow-md rounded-md flex-col sm:flex-row flex flex-wrap gap-4 items-end"
     >
       <div className="grid items-center gap-1.5  flex-1 w-full">
