@@ -4,7 +4,7 @@ import { supabase } from "../utils/supabase";
 //전체 데이터 불러오기
 export const getExpensesData = async(filter:string):Promise<Tables<"expenses">[]>=>{
     const monthToTwo = filter.padStart(2, "0");
-    const { data,error } = await supabase.from('expenses').select("*").order("date", { ascending: false }).like("date", `%-${monthToTwo}-%`);
+    const { data,error } = await supabase.from('expenses').select("*").order("date", { ascending: true }).like("date", `%-${monthToTwo}-%`);
 
     if(error){
       console.log(error)
@@ -37,3 +37,27 @@ export const getDetailData = async(id:string)=>{
     console.log(error);
   }
 }
+
+//상세페이지 정보 수정
+export  const handleUpdate = async (
+  id: Tables<"expenses">["id"], formData: Tables<"expenses">
+) => {
+  const { error } = await supabase
+    .from("expenses")
+    .update({
+      date: formData?.date,
+      item: formData?.item,
+      amount: formData?.amount,
+      description: formData?.description,
+    })
+    .eq("id", id);
+
+  if (error) {
+    return alert(error.message);
+  }
+};
+
+//상세페이지 정보 삭제
+export const handleDelete = async (id: Tables<"expenses">["id"]) => {
+  await supabase.from("expenses").delete().eq("id", id);
+};
