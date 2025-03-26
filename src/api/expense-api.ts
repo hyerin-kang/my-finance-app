@@ -3,8 +3,8 @@ import { supabase } from "../utils/supabase";
 
 //전체 데이터 불러오기
 export const getExpensesData = async(filter:string):Promise<Tables<"expenses">[]>=>{
-    const monthToTwo = filter.padStart(2, "0");
-    const { data,error } = await supabase.from('expenses').select("*").order("date", { ascending: true }).like("date", `%-${monthToTwo}-%`);
+    const padedMonth = filter.padStart(2, "0");
+    const { data,error } = await supabase.from('expenses').select("*").order("date", { ascending: true }).like("date", `%-${padedMonth}-%`);
 
     if(error){
       console.log(error)
