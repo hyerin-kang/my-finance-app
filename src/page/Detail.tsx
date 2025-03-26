@@ -33,6 +33,7 @@ const Detail = () => {
     }) => handleUpdate(id, formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      alert("수정완료");
       navigate("/");
     },
     onError: (error) => {
@@ -43,8 +44,7 @@ const Detail = () => {
   const { mutate: deleteMutate } = useMutation({
     mutationFn: (id: Tables<"expenses">["id"]) => handleDelete(id),
     onSuccess: () => {
-      const isConfirm = window.confirm("정말 삭제할까요?");
-      if (!isConfirm) return;
+      alert("삭제되었습니다");
       navigate("/");
     },
     onError: (error) => {
@@ -76,6 +76,8 @@ const Detail = () => {
   };
 
   const handleDeleteBtn = (id: Tables<"expenses">["id"]) => {
+    const isConfirm = window.confirm("정말 삭제할까요?");
+    if (!isConfirm) return;
     deleteMutate(id);
   };
 
