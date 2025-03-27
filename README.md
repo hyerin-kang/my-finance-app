@@ -5,13 +5,13 @@
 
 <!-- 기간 -->
 
-### :heavy_check_mark: **Development Period**
+### :calendar: **Development Period**
 2025/03/20 ~ 2025/03/26
 
 <br/>
 <!-- 테크 스택 -->
 
-### :heavy_check_mark: **Tech Stack**
+### :gem: **Tech Stack**
 ![Yarn](https://img.shields.io/badge/yarn-%232C8EBB.svg?style=for-the-badge&logo=yarn&logoColor=white)
 ![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
@@ -32,7 +32,6 @@
 
 <!-- 특징 하나 -->
 ### :heavy_check_mark: **MAIN PAGE**
-
 - 월별 지출 내역 조회 기능
 - 새로운 지출 항목 등록 기능
 - 날짜, 금액, 카테고리, 내용 등 입력
