@@ -1,18 +1,10 @@
 import { Label } from "@radix-ui/react-label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { addExpenseData } from "../api/expense-api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAddMutation } from "../hooks/useExpensesQuery";
 
 const CreateExpense = () => {
-  const queryClient = useQueryClient();
-  const { mutate } = useMutation({
-    mutationFn: addExpenseData,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["expenses"] });
-      alert("가계부가 추가되었습니다");
-    },
-  });
+  const { mutate: addMutate } = useAddMutation();
 
   const addExpense = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,7 +20,7 @@ const CreateExpense = () => {
     if (!data.date || !data.item || !data.amount || !data.description) {
       return alert("정보를 모두 입력해주세요");
     }
-    mutate(data);
+    addMutate(data);
     e.currentTarget.reset();
   };
   return (

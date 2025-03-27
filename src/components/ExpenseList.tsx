@@ -1,20 +1,12 @@
-import { Link, useSearchParams } from "react-router";
-import { useQuery } from "@tanstack/react-query";
-import { getExpensesData } from "../api/expense-api";
-import { Tables } from "../../database.types";
+import { Link } from "react-router";
+import { useListQuery } from "../hooks/useExpensesQuery";
 
 const ExpenseList = () => {
-  const [searchParams] = useSearchParams();
-  const selectedFilter = searchParams.get("month") || "1";
-
   const amountToWon = (amount: number) => {
     return new Intl.NumberFormat("ko-KR").format(amount);
   };
 
-  const { data, isPending, isError } = useQuery<Tables<"expenses">[]>({
-    queryKey: ["expenses", selectedFilter],
-    queryFn: () => getExpensesData(selectedFilter),
-  });
+  const { data, isPending, isError } = useListQuery();
 
   if (isPending) {
     return <div>로딩중...</div>;
@@ -47,9 +39,7 @@ const ExpenseList = () => {
           );
         })
       ) : (
-        <div className="text-center text-gray-500">
-          {selectedFilter}월 데이터가 없습니다
-        </div>
+        <div className="text-center text-gray-500"> 데이터가 없습니다</div>
       )}
     </div>
   );

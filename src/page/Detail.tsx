@@ -1,62 +1,29 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Tables } from "../../database.types";
-import { getDetailData, handleDelete, handleUpdate } from "../api/expense-api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useDeleteMutation,
+  useDetailQuery,
+  useUpdateMutation,
+} from "../hooks/useExpensesQuery";
 
 const Detail = () => {
-  const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+
   const [formData, setFormData] = useState<Tables<"expenses"> | null>(null);
 
-  const { data, isPending, isError } = useQuery({
-    queryKey: ["expenses", id],
-    queryFn: async () => {
-      if (id) {
-        const res = await getDetailData(id);
-        return res;
-      }
-    },
-  });
-
-  const { mutate: updateMutate } = useMutation({
-    mutationFn: ({
-      id,
-      formData,
-    }: {
-      id: Tables<"expenses">["id"];
-      formData: Tables<"expenses">;
-    }) => handleUpdate(id, formData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["expenses"] });
-      alert("수정완료");
-      navigate("/");
-    },
-    onError: (error) => {
-      alert(`수정중 오류가 발생하였습니다 : ${error.message}`);
-    },
-  });
-
-  const { mutate: deleteMutate } = useMutation({
-    mutationFn: (id: Tables<"expenses">["id"]) => handleDelete(id),
-    onSuccess: () => {
-      alert("삭제되었습니다");
-      navigate("/");
-    },
-    onError: (error) => {
-      alert(`삭제중 오류가 발생하였습니다 : ${error.message}`);
-    },
-  });
+  const { data: detailData, isPending, isError } = useDetailQuery(id as string);
+  const { mutate: updateMutate } = useUpdateMutation();
+  const { mutate: deleteMutate } = useDeleteMutation();
 
   useEffect(() => {
-    if (data) {
-      setFormData(data);
+    if (detailData) {
+      setFormData(detailData);
     }
-  }, [data]);
+  }, [detailData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -89,7 +56,7 @@ const Detail = () => {
     return <div>데이터 조회 중 오류가 발생했습니다.</div>;
   }
 
-  if (!formData) {
+  if (!formData || !id) {
     return <div>해당 데이터가 없습니다</div>;
   }
 
